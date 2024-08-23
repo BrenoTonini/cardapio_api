@@ -1,0 +1,15 @@
+{
+  "name": "cardapio_api",
+  "version": "1.0.0",
+  "description": "cardapio api para sistema de midia indoor com nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Breno Tonini",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.2",
+    "express": "^4.19.2"
+  }
+}
