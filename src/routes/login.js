@@ -3,7 +3,7 @@ const { createClient } = require('@supabase/supabase-js');
 const config = require('../config');
 
 const router = express.Router();
-const supabase = createClient(config.supabaseUrl, config.supabaseKey);
+const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_KEY);
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
