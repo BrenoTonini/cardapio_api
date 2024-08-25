@@ -8,16 +8,17 @@ const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_KEY);
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
   if (error) {
+    console.log("não autorizado");
     return res.status(401).json({ message: error.message });
   }
-
-  res.status(200).json({ message: 'Login successful' });
+  
+  res.status(200).json({ data });
 });
 
 module.exports = router;

@@ -1,16 +1,21 @@
 const express = require('express');
-const cors = require('cors'); // Importa o CORS
+const cors = require('cors');
 const loginRoute = require('./routes/login');
+const sessionRoute = require('./routes/session');
 
 const app = express();
 
-// Configura o CORS para permitir requisições de http://localhost:5173
-app.use(cors({
-  origin: 'http://localhost:5173'
-}));
+const corsOptions = {
+  origin: 'http://projeto-midia-indoor-navy.vercel.app'
+};
 
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/api', loginRoute);
+app.use('/api', sessionRoute);
 
-app.listen();
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
