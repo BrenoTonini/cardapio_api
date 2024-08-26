@@ -5,6 +5,7 @@ const config = require('../config');
 const router = express.Router();
 const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_KEY);
 
+//autentica usuário e retorna o access_token para acessar os outros endpoints
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -14,7 +15,6 @@ router.post('/login', async (req, res) => {
   });
 
   if (error) {
-    console.log("não autorizado");
     return res.status(401).json({ message: error.message });
   }
   
