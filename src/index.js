@@ -8,9 +8,12 @@ const cors = require('cors');
 
 const app = express();
 
-app.use(cors({
+
+const corsOptions = {
   origin: 'https://projeto-midia-indoor-navy.vercel.app',
-}));
+}
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
