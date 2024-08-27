@@ -9,7 +9,7 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({
-  AccessControlAllowOrigin: 'https://projeto-midia-indoor-navy.vercel.app',
+  origin: 'https://projeto-midia-indoor-navy.vercel.app',
 }));
 
 app.use(express.json());
