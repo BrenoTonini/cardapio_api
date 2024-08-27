@@ -8,9 +8,7 @@ const router = express.Router();
 const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_KEY);
 
 // Configura CORS para permitir requisições da origem específica
-app.use(cors({
-  origin: 'https://projeto-midia-indoor-navy.vercel.app',
-}));
+app.use(cors());
 
 // Middleware para analisar JSON
 app.use(express.json());
