@@ -9,29 +9,11 @@ const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_KEY);
 
 // Configura CORS para permitir requisições da origem específica
 app.use(cors({
-  origin: 'https://projeto-midia-indoor-navy.vercel.app',
+  origin: '*', // Permite qualquer origem
+  methods: 'GET,OPTIONS,PATCH,DELETE,POST,PUT', // Métodos permitidos
+  allowedHeaders: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization',
+  credentials: true, // Permite envio de credenciais (cookies, auth headers)
 }));
-
-module.exports = {
-  trailingSlash: false,
-  async headers() {
-    return [
-      {
-        // matching all API routes
-        source: '/:path*',
-        headers: [
-          { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
-          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization' },
-        ],
-      },
-    ];
-  },
-  async redirects() {
-    return [];
-  }
-};
 
 // Middleware para analisar JSON
 app.use(express.json());
