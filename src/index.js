@@ -9,7 +9,7 @@ const authenticateToken = require('./middlewares/authenticateToken');
 const app = express();
 
 app.use(cors({
-  origin: 'http://projeto-midia-indoor-navy.vercel.app'
+  origin: 'https://projeto-midia-indoor-navy.vercel.app'
 }));
 app.use(express.json());
 
