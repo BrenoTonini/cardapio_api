@@ -4,8 +4,10 @@
   "description": "cardapio api para sistema de midia indoor com nodejs",
   "main": "index.js",
   "scripts": {
+    "build": "echo 'No build step necessary'",
     "dev": "node src/index.js",
-    "vercel-build": "npm run dev"
+    "start": "npm run dev",
+    "vercel-build": "npm intall && npm run build"
   },
   "author": "Breno Tonini",
   "license": "ISC",
