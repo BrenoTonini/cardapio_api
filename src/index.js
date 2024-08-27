@@ -9,9 +9,7 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({
-  origin: 'https://projeto-midia-indoor-navy.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  AccessControlAllowOrigin: 'https://projeto-midia-indoor-navy.vercel.app',
 }));
 
 app.use(express.json());
