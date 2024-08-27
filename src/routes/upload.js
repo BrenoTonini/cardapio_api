@@ -37,8 +37,7 @@ router.post('/upload/file', upload.single('file'), async (req, res) => {
 });
 
 //faz o upload de html
-router.post('/upload/html', async (req, res) => {
-  return;
-});
+// router.post('/upload/html', async (req, res) => {
+// });
 
 module.exports = router;
