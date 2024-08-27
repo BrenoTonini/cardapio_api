@@ -7,7 +7,7 @@
     "build": "echo 'No build step necessary'",
     "dev": "node src/index.js",
     "start": "npm run dev",
-    "vercel-build": "npm intall && npm run build"
+    "vercel-build": "npm run build"
   },
   "author": "Breno Tonini",
   "license": "ISC",
