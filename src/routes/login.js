@@ -7,13 +7,20 @@ const app = express();
 const router = express.Router();
 const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_KEY);
 
-// Configura CORS para permitir requisições da origem específica
-app.use(cors({
-  origin: '*', // Permite qualquer origem
-  methods: 'GET,OPTIONS,PATCH,DELETE,POST,PUT', // Métodos permitidos
-  allowedHeaders: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization',
-  credentials: true, // Permite envio de credenciais (cookies, auth headers)
-}));
+// Middleware para adicionar cabeçalhos CORS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.header('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
+
+  // Se a requisição for um "preflight" (opções), responde diretamente
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  next();
+});
 
 // Middleware para analisar JSON
 app.use(express.json());
