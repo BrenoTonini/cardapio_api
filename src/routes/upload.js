@@ -36,8 +36,29 @@ router.post('/upload/file', upload.single('file'), async (req, res) => {
   }
 });
 
-//faz o upload de html
-// router.post('/upload/html', async (req, res) => {
-// });
+// Rota para fazer o upload de HTML
+router.post('/upload/html', async (req, res) => {
+  const { htmlContent, title } = req.body;
+
+  if (!htmlContent || !title) {
+    return res.status(400).json({ error: 'HTML content and title are required' });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('html_content') // Nome da tabela no Supabase
+      .insert([
+        { title: title, content: htmlContent } // Inserção dos dados na tabela
+      ]);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.status(200).json({ message: 'HTML content saved successfully!', data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
