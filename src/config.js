@@ -8,6 +8,7 @@ const SUPABASE_KEY = process.env.SUPABASE_KEY_SECRET;
 const URL_SITE = 'https://projeto-midia-indoor-navy.vercel.app'
 
 module.exports = {
-    SUPABASE_URL,
-    SUPABASE_KEY,
-  };
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  URL_SITE,
+};
