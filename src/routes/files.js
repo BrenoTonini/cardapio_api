@@ -5,32 +5,6 @@ const config = require('../config');
 const router = express.Router();
 const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_KEY);
 
-/*  NÃO UTILIZAR ESSA BOMBA.
-
-//get pra pegar os arquivos do bucket media
-router.get('/files', async (req, res) => {
-    try {
-        const { data, error } = await supabase.storage
-            .from('media')
-            .list('uploads', {
-                limit: 100,
-                offset: 0,
-                sortBy: { column: 'name', order: 'asc' },
-            });
-
-        if (error) {
-            console.error('Error fetching files:', error.message);
-            return res.status(500).json({ error: error.message });
-        }
-
-        res.json(data);
-    } catch (error) {
-        console.error('Error fetching files:', error.message);
-        res.status(500).json({ error: error.message });
-    }
-});
-*/
-
 router.get('/files/db', async (req, res) => {
     try {
         const { limit = 10, offset = 0 } = req.query;

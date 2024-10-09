@@ -5,6 +5,8 @@ const loginRoute = require('./routes/login');
 const sessionRoute = require('./routes/session');
 const filesRoute = require('./routes/files');
 const htmlRoute = require('./routes/html');
+const devicesRoute = require('./routes/devices');
+const playlistsRoute = require('./routes/playlist');
 const uploadRoute = require('./routes/upload');
 const deleteRoute = require('./routes/delete');
 const authenticateToken = require('./middlewares/authenticateToken');
@@ -27,6 +29,8 @@ app.use('/api', sessionRoute);
 app.use(authenticateToken);
 app.use('/api', filesRoute);
 app.use('/api', htmlRoute);
+app.use('/api', devicesRoute);
+app.use('/api', playlistsRoute);
 app.use('/api', uploadRoute);
 app.use('/api', deleteRoute);
 

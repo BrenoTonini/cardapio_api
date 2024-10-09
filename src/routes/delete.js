@@ -51,28 +51,116 @@ router.delete('/files/delete/:fileId', async (req, res) => {
         return res.status(500).json({ message: 'Erro interno do servidor' });
     }
 });
-  
+
 // rota pra deletar conteudo html
 router.delete('/html/delete/:contentId', async (req, res) => {
     const { contentId } = req.params;
+
+    try {
+        const { error: deleteError } = await supabase
+            .from('html_content')
+            .delete()
+            .eq('id', contentId);
+
+        if (deleteError) {
+            console.error('Error deleting content:', deleteError.message);
+            return res.status(500).json({ error: 'Failed to delete content' });
+        }
+
+        res.status(200).json({ message: 'Content deleted successfully' });
+    } catch (error) {
+        console.error('Unexpected error:', error.message);
+        res.status(500).json({ error: 'Unexpected error occurred' });
+    }
+});
+
+// rota pra deletar dispositivo
+router.delete('/device/delete/:deviceId', async (req, res) => {
+    const { deviceId } = req.params;
+
+    try {
+        const { error: deleteError } = await supabase
+            .from('device')
+            .delete()
+            .eq('id', deviceId);
+
+        if (deleteError) {
+            console.error('Error deleting device', deleteError.message);
+            return res.status(500).json({ error: 'Failed to delete device ' });
+        }
+
+        res.status(200).json({ message: 'Device deleted successfully!' });
+    } catch (error) {
+        console.error('Unexpected error:', error.message);
+        res.status(500).json({ error: 'Unexpected error occurred' });
+    }
+});
+
+// rota pra deletar playlist
+router.delete('/playlist/delete/:playlistId', async (req, res) => {
+    const { playlistId } = req.params;
+
+    try {
+        const { error: deleteError } = await supabase
+            .from('playlist')
+            .delete()
+            .eq('id', playlistId);
+
+        if (deleteError) {
+            console.error('error deleting playlist', deleteError.message);
+            return res.status(500).json({ error: 'Failed to delete playlist' });
+        }
+
+        res.status(200).json({ message: 'Playlist deleted successfully!' });
+    } catch (error) {
+        console.error('Unexpected error:', error.message);
+        res.status(500).json({ error: 'Unexpected error occurred' });
+    }
+});
+
+// Deletar associação à playlist
+router.delete('/playlist/:playlistId/delete/:contentType/:contentId', async (req, res) => {
+    const { playlistId, contentType, contentId } = req.params;
   
     try {
-      const { error: deleteError } = await supabase
-        .from('html_content')
-        .delete()
-        .eq('id', contentId);
+        // Verifica se o playlistId, contentType e contentId foram fornecidos
+        if (!playlistId || !contentType || !contentId) {
+            return res.status(400).json({ error: 'playlistId, contentType e contentId são obrigatórios.' });
+        }
   
-      if (deleteError) {
-        console.error('Error deleting content:', deleteError.message);
-        return res.status(500).json({ error: 'Failed to delete content' });
-      }
+        // Realiza a exclusão com base no tipo de conteúdo
+        if (contentType === 'html') {
+            // Deletar a associação de HTML
+            const { data, error } = await supabase
+                .from('content_assignments')
+                .delete()
+                .match({ playlist_id: playlistId, html_id: contentId });
   
-      res.status(200).json({ message: 'Content deleted successfully' });
-    } catch (error) {
-      console.error('Unexpected error:', error.message);
-      res.status(500).json({ error: 'Unexpected error occurred' });
+            if (error) {
+                console.error(error);
+                return res.status(500).json({ error: error.message });
+            }
+  
+            return res.status(200).json({ message: 'HTML removido da playlist com sucesso.', data: data });
+        } else if (contentType === 'file') {
+            // Deletar a associação de arquivo usando ca_id
+            const { data, error } = await supabase
+                .from('content_assignments')
+                .delete()
+                .match({ playlist_id: playlistId, media_id: contentId }); // aqui usa media_id
+  
+            if (error) {
+                console.error(error);
+                return res.status(500).json({ error: error.message });
+            }
+  
+            return res.status(200).json({ message: 'Arquivo removido da playlist com sucesso.', data: data });
+        } else {
+            return res.status(400).json({ error: 'Tipo de conteúdo inválido.' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
     }
   });
-  
-
-  module.exports = router;
+module.exports = router;
