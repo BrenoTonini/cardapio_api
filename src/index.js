@@ -13,11 +13,9 @@ const authenticateToken = require('./middlewares/authenticateToken');
 
 const app = express();
 
-// app.use(cors({
-//   origin: config.URL_SITE
-// }));
-
-app.use(cors());
+app.use(cors({
+  origin: config.URL_SITE
+}));
 
 app.use(express.json());
 
