@@ -5,6 +5,7 @@ const config = require('../config');
 const router = express.Router();
 const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_KEY);
 
+// rota para buscar dispositivos
 router.get('/devices/db', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -26,6 +27,7 @@ router.get('/devices/db', async (req, res) => {
   }
 });
 
+// rota para inserir novo dispositivo
 router.post('/upload/device', async (req, res) => {
   const { name, description } = req.body;
 
@@ -53,6 +55,7 @@ router.post('/upload/device', async (req, res) => {
   }
 });
 
+// rota pra editar dispositivo
 router.put('/device/edit/:deviceId', async (req, res) => {
   const { deviceId } = req.params;
   const { name, description, playlist_id } = req.body;
@@ -65,7 +68,8 @@ router.put('/device/edit/:deviceId', async (req, res) => {
       const { data, error } = await supabase
           .from('device')
           .update({ name, description, playlist_id })
-          .eq('id', deviceId);
+          .eq('id', deviceId)
+          .select();
 
       if (error) {
           console.log(error);
@@ -75,6 +79,64 @@ router.put('/device/edit/:deviceId', async (req, res) => {
       res.status(200).json({ message: 'Dispositivo atualizado com sucesso!', data });
   } catch (err) {
       res.status(500).json({ error: err.message });
+  }
+});
+
+
+// rota para buscar a playlist associada a um dispositivo
+router.get('/device/:deviceId/playlist', async (req, res) => {
+  const { deviceId } = req.params;
+  console.log(`Requisição recebida para dispositivo ID: ${deviceId}`);
+
+  try {
+    // Buscar o dispositivo pelo ID e pegar o playlist_id associado
+    const { data: device, error: deviceError } = await supabase
+      .from('device')
+      .select('playlist_id')
+      .eq('id', deviceId)
+      .single();
+
+    if (deviceError || !device) {
+      console.log('Dispositivo não encontrado:', deviceId);
+      return res.status(404).json({ error: 'Dispositivo não encontrado.' });
+    }
+
+    const playlistId = device.playlist_id;
+
+    // Agora buscar as mídias e o HTML associados à playlist
+    const { data: playlistContent, error: playlistError } = await supabase
+      .from('content_assignments')
+      .select('media_id, html_id, duration')
+      .eq('playlist_id', playlistId);
+
+    if (playlistError) {
+      console.error('Erro ao buscar conteúdo da playlist:', playlistError.message);
+      return res.status(500).json({ error: playlistError.message });
+    }
+
+    // Pegar URLs das mídias e HTML
+    const mediaIds = playlistContent.map(item => item.media_id);
+    const htmlIds = playlistContent.map(item => item.html_id);
+
+    const { data: mediaContent } = await supabase
+      .from('media_content')
+      .select('file_url, file_name')
+      .in('id', mediaIds);
+
+    const { data: htmlContent } = await supabase
+      .from('html_content')
+      .select('html, background_image_url')
+      .in('id', htmlIds);
+
+    // Retornar tudo em um formato organizado
+    res.json({
+      playlist: playlistId,
+      media: mediaContent,
+      html: htmlContent,
+    });
+  } catch (error) {
+    console.error('Error fetching playlist content:', error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 

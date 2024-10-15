@@ -18,6 +18,10 @@ router.post('/login', async (req, res) => {
     return res.status(401).json({ message: error.message });
   }
 
-  res.status(200).json({ data });
+  if (data && data.session) {
+    return res.status(200).json({ data }); // Retorna o token
+  } else {
+    return res.status(500).json({ message: 'Erro ao autenticar usuário' });
+  }
 });
 module.exports = router;
