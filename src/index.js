@@ -13,19 +13,20 @@ const authenticateToken = require('./middlewares/authenticateToken');
 
 const app = express();
 
-// app.use(cors({
-//   origin: config.URL_SITE
-// }));
-
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://playlist-player.vercel.app',
+    'https://projeto-midia-indoor-navy.vercel.app'
+  ]
+}));
 
 app.use(express.json());
 
-//rotas que não precisam do auth token
+// Rotas que não precisam do auth token
 app.use('/api', loginRoute);
 app.use('/api', sessionRoute);
 
-//rotas que precisam do auth token
+// Rotas que precisam do auth token
 app.use(authenticateToken);
 app.use('/api', filesRoute);
 app.use('/api', htmlRoute);
