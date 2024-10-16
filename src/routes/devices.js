@@ -100,8 +100,12 @@ router.get('/device/:deviceId/playlist', async (req, res) => {
       console.log('Dispositivo não encontrado:', deviceId);
       return res.status(404).json({ error: 'Dispositivo não encontrado.' });
     }
+    else if (device.playlist_id === null){
+      return res.status(405).json({ error: 'O dispositivo não possui nenhuma playlist associada.'})
+    }
 
     const playlistId = device.playlist_id;
+    console.log(playlistId);
 
     // Agora buscar as mídias e o HTML associados à playlist
     const { data: playlistContent, error: playlistError } = await supabase
@@ -115,8 +119,10 @@ router.get('/device/:deviceId/playlist', async (req, res) => {
     }
 
     // Pegar URLs das mídias e HTML
-    const mediaIds = playlistContent.map(item => item.media_id);
-    const htmlIds = playlistContent.map(item => item.html_id);
+    const mediaIds = playlistContent.map(item => item.media_id).filter(id => id !== null);
+    const htmlIds = playlistContent.map(item => item.html_id).filter(id => id !== null);
+
+    console.log(mediaIds, htmlIds);
 
     const { data: mediaContent } = await supabase
       .from('media_content')
@@ -125,7 +131,7 @@ router.get('/device/:deviceId/playlist', async (req, res) => {
 
     const { data: htmlContent } = await supabase
       .from('html_content')
-      .select('html, background_image_url')
+      .select('title, content')
       .in('id', htmlIds);
 
     // Retornar tudo em um formato organizado
