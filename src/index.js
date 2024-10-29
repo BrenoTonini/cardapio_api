@@ -23,23 +23,23 @@ app.use(express.json());
 
 setupSupabaseMonitor(io);
 
+//olá mundo na url base
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
 //rotas que não precisam do auth token
 app.use('/api', loginRoute);
 app.use('/api', sessionRoute);
 
 //rotas que precisam do auth token
-app.use(authenticateToken);
+app.use('/api', authenticateToken);
 app.use('/api', filesRoute);
 app.use('/api', htmlRoute);
 app.use('/api', devicesRoute);
 app.use('/api', playlistsRoute);
 app.use('/api', uploadRoute);
 app.use('/api', deleteRoute);
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Algo deu errado!');
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
