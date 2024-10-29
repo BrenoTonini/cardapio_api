@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require('http');
 const cors = require('cors');
 const config = require('./config');
 const loginRoute = require('./routes/login');
@@ -9,17 +10,18 @@ const devicesRoute = require('./routes/devices');
 const playlistsRoute = require('./routes/playlist');
 const uploadRoute = require('./routes/upload');
 const deleteRoute = require('./routes/delete');
+const setupSocketIO = require('./routes/socket');
+const setupSupabaseMonitor = require('./routes/supabaseMonitor');
 const authenticateToken = require('./middlewares/authenticateToken');
 
 const app = express();
-
-// app.use(cors({
-//   origin: config.URL_SITE
-// }));
+const server = http.createServer(app);
+const io = setupSocketIO(server);
 
 app.use(cors());
-
 app.use(express.json());
+
+setupSupabaseMonitor(io);
 
 //rotas que não precisam do auth token
 app.use('/api', loginRoute);
@@ -33,6 +35,11 @@ app.use('/api', devicesRoute);
 app.use('/api', playlistsRoute);
 app.use('/api', uploadRoute);
 app.use('/api', deleteRoute);
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Algo deu errado!');
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
