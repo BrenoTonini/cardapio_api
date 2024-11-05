@@ -13,12 +13,14 @@ const authenticateToken = require('./middlewares/authenticateToken');
 
 const app = express();
 
-app.use(cors({
-  origin: [
-    'https://playlist-player.vercel.app',
-    'https://projeto-midia-indoor-navy.vercel.app'
-  ]
-}));
+// app.use(cors({
+//   origin: [
+//     'https://playlist-player.vercel.app',
+//     'https://projeto-midia-indoor-navy.vercel.app'
+//   ]
+// }));
+
+app.use(cors());
 
 app.use(express.json());
 
