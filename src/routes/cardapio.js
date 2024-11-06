@@ -62,7 +62,7 @@ router.post('/upload/cardapio', async (req, res) =>{
         .insert([
             {
                 name: conteudo.nome,
-                description: conteudo.description,
+                description: conteudo.descricao,
                 content: conteudo.categorias
             }
         ]);
