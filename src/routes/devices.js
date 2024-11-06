@@ -58,16 +58,20 @@ router.post('/upload/device', async (req, res) => {
 // rota pra editar dispositivo
 router.put('/device/edit/:deviceId', async (req, res) => {
   const { deviceId } = req.params;
-  const { name, description, playlist_id } = req.body;
+  const { name, description, playlist_id, menu_id } = req.body;
 
   if (!name || !description) {
       return res.status(400).json({ error: 'Nome e descrição são obrigatórios' });
   }
 
+  if (playlist_id && menu_id){
+    return res.status(400).json({ error: 'Não é possivel cadastrar uma playlist e um dispositivo, apenas um dos dois.'})
+  }
+
   try {
       const { data, error } = await supabase
           .from('device')
-          .update({ name, description, playlist_id })
+          .update({ name, description, playlist_id, cardapio_id: menu_id })
           .eq('id', deviceId)
           .select();
 
