@@ -82,6 +82,10 @@ router.post('/upload/cardapio', async (req, res) =>{
 router.delete('/cardapio/delete/:idCardapio', async (req, res) => {
     const { idCardapio } = req.params;
 
+    if (isNaN(idCardapio)) {
+        return res.status(400).json({ error: 'Invalid cardapio ID' });
+    }
+    
     try {
         const { error: deleteError } = await supabase
             .from('cardapio')
