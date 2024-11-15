@@ -119,48 +119,29 @@ router.delete('/playlist/delete/:playlistId', async (req, res) => {
 });
 
 // Deletar associação à playlist
-router.delete('/playlist/:playlistId/delete/:contentType/:contentId', async (req, res) => {
-    const { playlistId, contentType, contentId } = req.params;
+router.delete('/playlist/:playlistId/delete/:assignmentId', async (req, res) => {
+    const { assignmentId } = req.params;
   
     try {
-        // Verifica se o playlistId, contentType e contentId foram fornecidos
-        if (!playlistId || !contentType || !contentId) {
-            return res.status(400).json({ error: 'playlistId, contentType e contentId são obrigatórios.' });
+        if (!assignmentId) {
+            return res.status(400).json({ error: 'assignmentId é obrigatório.' });
         }
   
-        // Realiza a exclusão com base no tipo de conteúdo
-        if (contentType === 'html') {
-            // Deletar a associação de HTML
-            const { data, error } = await supabase
-                .from('content_assignments')
-                .delete()
-                .match({ playlist_id: playlistId, html_id: contentId });
+        const { data, error } = await supabase
+            .from('content_assignments')
+            .delete()
+            .eq('ca_id', assignmentId );
   
-            if (error) {
-                console.error(error);
-                return res.status(500).json({ error: error.message });
-            }
-  
-            return res.status(200).json({ message: 'HTML removido da playlist com sucesso.', data: data });
-        } else if (contentType === 'file') {
-            // Deletar a associação de arquivo usando ca_id
-            const { data, error } = await supabase
-                .from('content_assignments')
-                .delete()
-                .match({ playlist_id: playlistId, media_id: contentId }); // aqui usa media_id
-  
-            if (error) {
-                console.error(error);
-                return res.status(500).json({ error: error.message });
-            }
-  
-            return res.status(200).json({ message: 'Arquivo removido da playlist com sucesso.', data: data });
-        } else {
-            return res.status(400).json({ error: 'Tipo de conteúdo inválido.' });
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ error: error.message });
         }
+  
+        return res.status(200).json({ message: 'Associação removida da playlist com sucesso.', data: data });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
     }
-  });
+});
+
 module.exports = router;

@@ -76,7 +76,9 @@ router.get('/playlist/:playlistId', async (req, res) => {
         media:media_id (id, file_name, file_extension, created_at, bucket_name, file_url),
         html:html_id (id, title, content, created_at)
       `)
-      .eq('playlist_id', playlistId);
+      .eq('playlist_id', playlistId)
+      .order('ca_id', { ascending: true })
+      
 
     if (contentsError) {
       return res.status(contentsStatus).json({ error: contentsError.message });
@@ -147,6 +149,32 @@ router.put('/playlist/edit/:playlistId', async (req, res) => {
       res.status(200).json({ message: 'Playlist atualizada com sucesso!', data });
   } catch (err) {
       res.status(500).json({ error: err.message });
+  }
+});
+
+router.put('/content_assignment/:contentId/duration', async (req, res) => {
+  const { contentId } = req.params;
+  const { duration } = req.body;
+
+  if (typeof duration !== 'number' || duration < 0) {
+    return res.status(400).json({ error: 'Duração inválida' });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('content_assignments')
+      .update({ duration })
+      .eq('ca_id', contentId);
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.status(200).json({ message: 'Duração atualizada com sucesso!', data });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
