@@ -27,6 +27,30 @@ router.get('/devices/db', async (req, res) => {
   }
 });
 
+router.get('/device/:deviceId', async (req, res) => {
+  try {
+    const { deviceId } = req.params;
+
+    const { data, error } = await supabase
+      .from('device')
+      .select('*')
+      .eq('id', deviceId)
+      .single();
+    
+      if (error) {
+        throw error;
+    }
+
+    res.json({
+        data
+    });
+  } catch (error) {
+      console.error(`Error fetching [cardapio ID: ${idCardapio}] `, error.message);
+      res.status(500).json({eror: 'Error fetching cardapio' });
+  
+  }
+});
+
 // rota para inserir novo dispositivo
 router.post('/upload/device', async (req, res) => {
   const { name, description } = req.body;
@@ -61,28 +85,28 @@ router.put('/device/edit/:deviceId', async (req, res) => {
   const { name, description, playlist_id, menu_id } = req.body;
 
   if (!name || !description) {
-      return res.status(400).json({ error: 'Nome e descrição são obrigatórios' });
+    return res.status(400).json({ error: 'Nome e descrição são obrigatórios' });
   }
 
-  if (playlist_id && menu_id){
-    return res.status(400).json({ error: 'Não é possivel cadastrar uma playlist e um dispositivo, apenas um dos dois.'})
+  if (playlist_id && menu_id) {
+    return res.status(400).json({ error: 'Não é possivel cadastrar uma playlist e um dispositivo, apenas um dos dois.' })
   }
 
   try {
-      const { data, error } = await supabase
-          .from('device')
-          .update({ name, description, playlist_id, cardapio_id: menu_id })
-          .eq('id', deviceId)
-          .select();
+    const { data, error } = await supabase
+      .from('device')
+      .update({ name, description, playlist_id, cardapio_id: menu_id })
+      .eq('id', deviceId)
+      .select();
 
-      if (error) {
-          console.log(error);
-          return res.status(500).json({ error: error.message });
-      }
+    if (error) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
 
-      res.status(200).json({ message: 'Dispositivo atualizado com sucesso!', data });
+    res.status(200).json({ message: 'Dispositivo atualizado com sucesso!', data });
   } catch (err) {
-      res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -104,8 +128,8 @@ router.get('/device/:deviceId/playlist', async (req, res) => {
       console.log('Dispositivo não encontrado:', deviceId);
       return res.status(404).json({ error: 'Dispositivo não encontrado.' });
     }
-    else if (device.playlist_id === null){
-      return res.status(405).json({ error: 'O dispositivo não possui nenhuma playlist associada.'})
+    else if (device.playlist_id === null) {
+      return res.status(405).json({ error: 'O dispositivo não possui nenhuma playlist associada.' })
     }
 
     const playlistId = device.playlist_id;
@@ -150,5 +174,4 @@ router.get('/device/:deviceId/playlist', async (req, res) => {
   }
 });
 
-router.put
 module.exports = router;
