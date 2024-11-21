@@ -10,33 +10,6 @@ const upload = multer({ storage: storage });
 const router = express.Router();
 const supabase = createClient(config.SUPABASE_URL, config.SUPABASE_KEY);
 
-async function uploadToBucket(file) {
-  const { data, error } = await supabase.storage
-    .from('media')
-    .upload(`uploads/${file.originalname}`, file.buffer, {
-      cacheControl: '3600',
-      upsert: false,
-    });
-
-    console.log(error);
-  return { data, error };
-}
-
-async function saveFileInfoToDatabase(file, fileExtension, filePath) {
-  const { data, error } = await supabase
-    .from('media_content')
-    .insert([
-      {
-        file_name: file.originalname,
-        file_extension: fileExtension,
-        bucket_name: 'media',
-        file_url: filePath,
-      },
-    ]);
-    console.log(error);
-  return { data, error };
-}
-
 router.post('/upload/file', upload.single('file'), async (req, res) => {
   const file = req.file;
 
@@ -52,17 +25,30 @@ router.post('/upload/file', upload.single('file'), async (req, res) => {
   }
 
   try {
-    const { data: uploadData, error: uploadError } = await uploadToBucket(file);
+    // Upload do arquivo ao bucket
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('media')
+      .upload(`uploads/${file.originalname}`, file.buffer, {
+        cacheControl: '3600',
+        upsert: false,
+      });
 
     if (uploadError) {
       return res.status(500).json({ error: uploadError.message });
     }
 
-    const { data: dbData, error: dbError } = await saveFileInfoToDatabase(
-      file,
-      fileExtension,
-      uploadData.path
-    );
+    // Salvar informações do arquivo no banco de dados
+    const { data: dbData, error: dbError } = await supabase
+      .from('media_content')
+      .insert([
+        {
+          file_name: file.originalname,
+          file_extension: fileExtension,
+          bucket_name: 'media',
+          file_url: uploadData.path,
+        },
+      ])
+      .select(); 
 
     if (dbError) {
       return res.status(500).json({ error: dbError.message });
